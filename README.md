@@ -205,7 +205,10 @@ Not tracked, created locally by `Quickstart` below: `configs/config.yml`,
 
 ## FAQ
 
-**Does my carrier limit how many messages I can send this way?**
+<details>
+<summary><b>Does my carrier limit how many messages I can send this way?</b></summary>
+<br>
+
 Yes — this uses `SmsManager` over your real SIM, so normal carrier
 rate limits and anti-spam policies apply. It's built for
 low-to-moderate internal traffic (OTPs, order confirmations, alerts),
@@ -213,7 +216,12 @@ not bulk marketing sends — see [What it refuses](#what-it-refuses).
 If you need real volume, this isn't the tool; go get a proper bulk
 SMS provider instead of fighting carrier throttling.
 
-**What happens if the phone loses connectivity or dies?**
+</details>
+
+<details>
+<summary><b>What happens if the phone loses connectivity or dies?</b></summary>
+<br>
+
 Messages queue server-side (`messages:list`/`messages:cancel` API) and
 the health endpoint reports device online/offline state (see
 [Status](#status)). There's no automatic failover to a second device
@@ -222,7 +230,12 @@ this deployment's `config.yml` targets one device. If single-device
 availability isn't good enough for what you're building, pair a
 second phone before you need it, not after it goes down.
 
-**Why not just use Twilio and eat the cost?**
+</details>
+
+<details>
+<summary><b>Why not just use Twilio and eat the cost?</b></summary>
+<br>
+
 For a handful of Egyptian numbers reachable at volume, most
 virtual-number providers either don't support local numbers or charge
 per-message well above local carrier rates (see [Why](#why)). This
@@ -230,7 +243,12 @@ trades that recurring cost for one spare phone and a SIM you already
 pay for. If your project needs numbers in a dozen countries with SLA
 guarantees, that tradeoff runs the other way — use Twilio.
 
-**Is this production-hardened, or a prototype?**
+</details>
+
+<details>
+<summary><b>Is this production-hardened, or a prototype?</b></summary>
+<br>
+
 The upstream (`android-sms-gateway/server`) is: 5,600+ stars, JWT auth
 with token revocation, rate limiting, Prometheus/Grafana shipped
 in-repo, active commit history with real performance work (see
@@ -240,13 +258,20 @@ not yet been used to send a single real message. Don't point anything
 customer-facing at it until [Status](#status) says a device is paired
 and this line is gone.
 
-**Why not build this into each project instead of a shared service?**
+</details>
+
+<details>
+<summary><b>Why not build this into each project instead of a shared service?</b></summary>
+<br>
+
 Because that's how you end up with three different Twilio
 integrations, three different secret rotations, and three different
 bugs in the same SMS-delivery code — one per project. SimQbit exists
 so the fleet pays that cost once. If you only ever have one project
 that needs SMS, a shared service is overhead you don't need yet —
 vendor it directly and skip this.
+
+</details>
 
 ## Acknowledgments
 
