@@ -1,8 +1,15 @@
 <div align="center">
 
-# SimQbit
+```text
+███████╗██╗███╗   ███╗ ██████╗ ██████╗ ██╗████████╗
+██╔════╝██║████╗ ████║██╔═══██╗██╔══██╗██║╚══██╔══╝
+███████╗██║██╔████╔██║██║   ██║██████╔╝██║   ██║
+╚════██║██║██║╚██╔╝██║██║▄▄ ██║██╔══██╗██║   ██║
+███████║██║██║ ╚═╝ ██║╚██████╔╝██████╔╝██║   ██║
+╚══════╝╚═╝╚═╝     ╚═╝ ╚══▀▀═╝ ╚═════╝ ╚═╝   ╚═╝
+```
 
-**Internal SMS Gateway — turn a real Android SIM into a programmable primitive for the fleet.**
+### A real SIM, made programmable
 
 [![CI](https://github.com/kariemSeiam/simqbit/actions/workflows/ci.yml/badge.svg)](https://github.com/kariemSeiam/simqbit/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
@@ -10,11 +17,17 @@
 [![Go](https://img.shields.io/badge/go-1.25%2B-00ADD8?logo=go&logoColor=white)](https://github.com/android-sms-gateway/server)
 [![Upstream stars](https://img.shields.io/github/stars/capcom6/android-sms-gateway?label=upstream%20stars&color=5C2D91)](https://github.com/capcom6/android-sms-gateway)
 
+<sup>Internal SMS gateway for the fleet. No Twilio. No virtual numbers. No SaaS dependency for something that should just live on a spare phone.</sup>
+
 **[Why](#why) · [Quickstart](#quickstart) · [Pairing a device](#pairing-a-device) · [Sending a message](#sending-a-message) · [Architecture](#architecture) · [Comparison](#why-this-fork) · [FAQ](#faq)**
 
 </div>
 
+<br>
+
 ---
+
+<br>
 
 > [!IMPORTANT]
 > No Android device is paired yet. The server runs and passes health
@@ -28,6 +41,10 @@ OTPs, order confirmations, or alerts by SMS. The usual answer is a
 per-message API like Twilio — expensive, and often unavailable for
 local numbers outside a handful of supported countries.
 
+```text
+your code ──POST /messages──> SimQbit ──push──> phone ──real SIM──> recipient
+```
+
 | Instead of… | You get… |
 |---|---|
 | Paying per-message to Twilio/MessageBird | Your own SIM's carrier plan — often flat-rate or unlimited |
@@ -38,6 +55,23 @@ local numbers outside a handful of supported countries.
 
 The name: **Sim** (the physical SIM/Android device layer) + **Qbit**
 (each message/device treated as a routable, software-controlled unit).
+
+### What it refuses
+
+- **No cloud account required.** Private mode only — this server is
+  yours, not a SaaS tenant.
+- **No bulk-sending pretense.** Built for OTPs and transactional
+  alerts at carrier-limited volume, not marketing blasts.
+- **No secrets in git, ever.** Every credential is `openssl rand`,
+  gitignored, scanned on every push (see [CI](.github/workflows/ci.yml)).
+
+### What it bets on
+
+- The upstream project (`android-sms-gateway`) outlives this wrapper —
+  5,600+ stars, active maintenance, real performance work in its
+  commit history.
+- One paired phone is enough for internal fleet traffic. Multi-device
+  is supported upstream if that stops being true.
 
 ## Architecture
 
