@@ -7,9 +7,9 @@
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Docker](https://img.shields.io/badge/docker-compose-2496ED?logo=docker&logoColor=white)](docker-compose.yml)
 [![Go](https://img.shields.io/badge/go-1.25%2B-00ADD8?logo=go&logoColor=white)](https://github.com/android-sms-gateway/server)
-[![Upstream](https://img.shields.io/badge/built_on-android--sms--gateway-5C2D91)](https://github.com/capcom6/android-sms-gateway)
+[![Upstream stars](https://img.shields.io/github/stars/capcom6/android-sms-gateway?label=upstream%20stars&color=5C2D91)](https://github.com/capcom6/android-sms-gateway)
 
-**[Why](#why) · [Quickstart](#quickstart) · [Pairing a device](#pairing-a-device) · [Sending a message](#sending-a-message) · [Architecture](#architecture) · [FAQ](#faq)**
+**[Why](#why) · [Quickstart](#quickstart) · [Pairing a device](#pairing-a-device) · [Sending a message](#sending-a-message) · [Architecture](#architecture) · [Comparison](#why-this-fork) · [FAQ](#faq)**
 
 </div>
 
@@ -108,20 +108,36 @@ OpenAPI schema served when `http.openapi.enabled: true` (already set in
 ## Why this fork
 
 Evaluated against `NdoleStudio/httpsms` and `textbee/textbee` before
-choosing `android-sms-gateway`:
+choosing `android-sms-gateway` as the base for this deployment —
+researched, not assumed (verified stars/license/topics via the GitHub
+API at time of writing):
 
-- **License** — Apache-2.0, not AGPL-3.0 (httpsms). No obligation to
-  open-source anything built on top commercially.
-- **Local mode** — the Android app can run a fully offline local server
-  with zero cloud dependency, a capability neither competitor has.
-- **Architecture** — Kotlin/Ktor on the app side (clean modules: gateway,
-  localserver, encryption, incoming, health), Go with clean
-  handler→service→repository layering on the server side, Prometheus +
-  Grafana dashboards shipped in-repo, per-device rate limiting, JWT with
-  token revocation, AES-256-CBC/PBKDF2 end-to-end encryption.
-- **Stars/activity** — 5,600+ stars, active commit history with real
-  performance work (index optimization, query denormalization), not
-  feature-only churn.
+| | SimQbit (on `android-sms-gateway`) | `NdoleStudio/httpsms` | `textbee/textbee` |
+|---|---|---|---|
+| License | Apache-2.0 | AGPL-3.0 | MIT |
+| Stars (upstream) | 5,600+ | 4,600+ | 3,000+ |
+| Local mode (zero cloud dependency) | ✅ | ❌ | ❌ |
+| Multi-SIM support | ✅ | ❌ | ✅ (Pro tier) |
+| MMS support | ✅ | ❌ | ❌ |
+| Rate limiting per device | ✅ | ❌ | ❌ |
+| Prometheus/Grafana shipped in-repo | ✅ | ❌ | ❌ |
+| JWT with token revocation | ✅ | Basic auth only | API key only |
+| End-to-end encryption | AES-256-CBC/PBKDF2 | ❌ | ❌ |
+| Server language | Go | Go | Node.js/NestJS |
+| App stack | Kotlin/Ktor (modern) | — | Kotlin + Java (mixed legacy) |
+
+<details>
+<summary>Why AGPL-3.0 mattered enough to rule out httpsms</summary>
+
+AGPL requires that anyone who runs a modified version of the software
+as a network service must publish their modified source. For an
+internal fleet tool that might later wrap this in a paid or
+client-facing product, that's a real constraint — Apache-2.0 carries
+no such obligation. This is a licensing decision, not a quality
+judgment on httpsms itself, which is a solid, actively maintained
+project.
+
+</details>
 
 ## Repository layout
 
