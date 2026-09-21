@@ -1,15 +1,8 @@
 <div align="center">
 
-```text
-███████╗██╗███╗   ███╗ ██████╗ ██████╗ ██╗████████╗
-██╔════╝██║████╗ ████║██╔═══██╗██╔══██╗██║╚══██╔══╝
-███████╗██║██╔████╔██║██║   ██║██████╔╝██║   ██║
-╚════██║██║██║╚██╔╝██║██║▄▄ ██║██╔══██╗██║   ██║
-███████║██║██║ ╚═╝ ██║╚██████╔╝██████╔╝██║   ██║
-╚══════╝╚═╝╚═╝     ╚═╝ ╚══▀▀═╝ ╚═════╝ ╚═╝   ╚═╝
-```
+# SimQbit
 
-### A real SIM, made programmable
+*A real SIM, made programmable.*
 
 [![CI](https://github.com/kariemSeiam/simqbit/actions/workflows/ci.yml/badge.svg)](https://github.com/kariemSeiam/simqbit/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
@@ -26,6 +19,26 @@
 <br>
 
 ---
+
+<br>
+
+> [!NOTE]
+> **This repo is a deployment wrapper, not the SMS gateway's source
+> code.** It has no application code of its own — that's not an
+> oversight, it's the point. It is `docker-compose.yml` +
+> `configs/*.yml` + this README, wiring together two things that
+> already exist and are already good:
+>
+> - **Server** — the prebuilt image `ghcr.io/android-sms-gateway/server`
+>   (Go, Apache-2.0, source: [`android-sms-gateway/server`](https://github.com/android-sms-gateway/server))
+> - **Android app** — the APK from [`capcom6/android-sms-gateway` releases](https://github.com/capcom6/android-sms-gateway/releases),
+>   installed on a real phone with a real SIM
+>
+> `docker compose up -d` pulls the server image and a MariaDB image —
+> nothing is built from source in this repo. If you want the actual
+> gateway source to read or modify, go to those two upstream repos;
+> this one exists so the fleet doesn't reinvent the deploy config for
+> each project that needs SMS.
 
 <br>
 
