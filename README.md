@@ -1,9 +1,13 @@
-# SMS Mesh — Internal SMS Gateway
+# SimQbit — Internal SMS Gateway
 
 Private-mode SMS Gateway server, self-hosted for the fleet. Any internal
 project (Hvar, gaffer, freelance-venture) can send/receive real SMS
 through an Android phone acting as a carrier gateway — no Twilio, no
 per-message fees, full control over the data path.
+
+The name: **Sim** (the physical SIM/Android device layer) + **Qbit**
+(each message/device treated as a routable, software-controlled unit) —
+turning a physical SIM into a programmable primitive for the fleet.
 
 Built on [`android-sms-gateway/server`](https://github.com/android-sms-gateway/server)
 (Go, Apache-2.0) — the highest-starred, most actively engineered
@@ -23,8 +27,8 @@ the gateway server itself and its MariaDB store.
 ## Quick start
 
 ```bash
-git clone <this-repo-url> sms-mesh
-cd sms-mesh
+git clone <this-repo-url> simqbit
+cd simqbit
 cp configs/config.example.yml configs/config.yml
 cp .env.example .env   # fill in real secrets, chmod 600 .env
 docker compose up -d
@@ -50,7 +54,7 @@ curl -X POST http://127.0.0.1:3900/api/3rdparty/v1/messages \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer <device-token>" \
   -d '{
-    "textMessage": {"text": "Hello from SMS Mesh"},
+    "textMessage": {"text": "Hello from SimQbit"},
     "phoneNumbers": ["+201234567890"]
   }'
 ```
@@ -80,7 +84,7 @@ choosing `android-sms-gateway`:
 ## Repository layout
 
 ```
-sms-mesh/
+simqbit/
 ├── docker-compose.yml       # server + MariaDB, secrets via .env (gitignored)
 ├── configs/
 │   ├── config.example.yml   # template, secrets redacted
