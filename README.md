@@ -4,6 +4,7 @@
 
 **Internal SMS Gateway — turn a real Android SIM into a programmable primitive for the fleet.**
 
+[![CI](https://github.com/kariemSeiam/simqbit/actions/workflows/ci.yml/badge.svg)](https://github.com/kariemSeiam/simqbit/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Docker](https://img.shields.io/badge/docker-compose-2496ED?logo=docker&logoColor=white)](docker-compose.yml)
 [![Go](https://img.shields.io/badge/go-1.25%2B-00ADD8?logo=go&logoColor=white)](https://github.com/android-sms-gateway/server)

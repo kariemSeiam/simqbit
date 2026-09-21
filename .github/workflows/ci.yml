@@ -1,0 +1,40 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  markdownlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npx --yes markdownlint-cli2 "**/*.md" "#node_modules"
+
+  compose-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate docker-compose.yml
+        run: |
+          cp .env.example .env
+          docker compose config --quiet
+
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Scan tracked files for literal-looking secrets
+        run: |
+          if git grep -nE "(password|token|secret)\s*[:=]\s*['\"]?[A-Za-z0-9+/]{16,}" -- \
+              ':!*.md' ':!LICENSE'; then
+            echo "Possible literal secret found in a tracked file" >&2
+            exit 1
+          fi
+          echo "No literal-looking secrets found."
