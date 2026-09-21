@@ -178,12 +178,19 @@ project.
 
 ```text
 simqbit/
-├── docker-compose.yml       # server + MariaDB, secrets via .env (gitignored)
+├── .github/workflows/ci.yml  # markdownlint + compose validate + secret scan on every push
 ├── configs/
-│   ├── config.example.yml   # template, secrets redacted
-│   └── config.yml           # real config, gitignored
-└── .env                     # DB credentials for compose, gitignored, chmod 600
+│   └── config.example.yml    # template; copy to config.yml (gitignored) and fill in real values
+├── docker-compose.yml        # server + MariaDB, secrets via .env (gitignored)
+├── .env.example               # template; copy to .env (gitignored, chmod 600)
+├── .gitignore
+├── .markdownlint.json         # same lint config CI runs against
+├── LICENSE                    # Apache-2.0
+└── README.md
 ```
+
+Not tracked, created locally by `Quickstart` below: `configs/config.yml`,
+`.env` — both real-secret files, both gitignored.
 
 ## Security notes
 
