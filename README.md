@@ -1,19 +1,61 @@
-# SimQbit — Internal SMS Gateway
+<div align="center">
 
-Private-mode SMS Gateway server, self-hosted for the fleet. Any internal
-project (Hvar, gaffer, freelance-venture) can send/receive real SMS
-through an Android phone acting as a carrier gateway — no Twilio, no
-per-message fees, full control over the data path.
+# SimQbit
+
+**Internal SMS Gateway — turn a real Android SIM into a programmable primitive for the fleet.**
+
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![Docker](https://img.shields.io/badge/docker-compose-2496ED?logo=docker&logoColor=white)](docker-compose.yml)
+[![Go](https://img.shields.io/badge/go-1.25%2B-00ADD8?logo=go&logoColor=white)](https://github.com/android-sms-gateway/server)
+[![Upstream](https://img.shields.io/badge/built_on-android--sms--gateway-5C2D91)](https://github.com/capcom6/android-sms-gateway)
+
+**[Why](#why) · [Quickstart](#quickstart) · [Pairing a device](#pairing-a-device) · [Sending a message](#sending-a-message) · [Architecture](#architecture) · [FAQ](#faq)**
+
+</div>
+
+---
+
+> [!IMPORTANT]
+> No Android device is paired yet. The server runs and passes health
+> checks, but no real SMS flows until a phone is registered — see
+> [Status](#status).
+
+## Why
+
+Any internal project (Hvar, gaffer, freelance-venture) needs to send
+OTPs, order confirmations, or alerts by SMS. The usual answer is a
+per-message API like Twilio — expensive, and often unavailable for
+local numbers outside a handful of supported countries.
+
+| Instead of… | You get… |
+|---|---|
+| Paying per-message to Twilio/MessageBird | Your own SIM's carrier plan — often flat-rate or unlimited |
+| A virtual number that doesn't exist for your country | Your real SIM, your real local number |
+| Trusting a third party with message content | Self-hosted, AES-256 end-to-end encryption to the device |
+| AGPL-licensed forks that leak into your product's license | Apache-2.0 throughout — no copyleft obligation |
+| A managed cloud dependency for a purely internal tool | Bound to `127.0.0.1`, reachable only from the fleet's own network |
 
 The name: **Sim** (the physical SIM/Android device layer) + **Qbit**
-(each message/device treated as a routable, software-controlled unit) —
-turning a physical SIM into a programmable primitive for the fleet.
+(each message/device treated as a routable, software-controlled unit).
+
+## Architecture
+
+```mermaid
+flowchart LR
+    A[Fleet project<br/>Hvar / gaffer / etc.] -->|POST /messages<br/>private_token| B[SimQbit server<br/>Go + MariaDB]
+    B -->|FCM push| C[Android app<br/>Kotlin/Ktor]
+    C -->|SmsManager| D[Carrier network]
+    D --> E[Recipient phone]
+    E -.->|reply SMS| C
+    C -.->|webhook| B
+    B -.->|delivery status| A
+```
 
 Built on [`android-sms-gateway/server`](https://github.com/android-sms-gateway/server)
 (Go, Apache-2.0) — the highest-starred, most actively engineered
 open-source Android SMS gateway backend available (see
-[Architecture notes](#why-this-fork)). Deploys as two Docker containers:
-the gateway server itself and its MariaDB store.
+[Why this fork](#why-this-fork)). Deploys as two Docker containers: the
+gateway server itself and its MariaDB store.
 
 ## Status
 
@@ -24,7 +66,7 @@ the gateway server itself and its MariaDB store.
 | Android device | Not yet registered — no real SMS flows until one is paired |
 | Public exposure | None — bound to `127.0.0.1:3900`, internal-only |
 
-## Quick start
+## Quickstart
 
 ```bash
 git clone <this-repo-url> simqbit
@@ -83,7 +125,7 @@ choosing `android-sms-gateway`:
 
 ## Repository layout
 
-```
+```text
 simqbit/
 ├── docker-compose.yml       # server + MariaDB, secrets via .env (gitignored)
 ├── configs/
@@ -102,6 +144,36 @@ simqbit/
   with its own auth).
 - GitHub secret scanning, push protection, and Dependabot security
   updates enabled on this repo.
+
+## FAQ
+
+**Does my carrier limit how many messages I can send this way?**
+Yes — this uses `SmsManager` over your real SIM, so normal carrier
+rate limits and anti-spam policies apply. It's built for
+low-to-moderate internal traffic (OTPs, order confirmations, alerts),
+not bulk marketing sends. For high volume, use multiple paired devices.
+
+**What happens if the phone loses connectivity or dies?**
+Messages queue server-side (`messages:list`/`messages:cancel` API) and
+the health endpoint reports device online/offline state. There's no
+automatic failover to a second device yet — pairing a second phone is
+supported by the upstream server, but SimQbit's current deployment
+targets one device.
+
+**Why not just use Twilio and eat the cost?**
+For a project needing a handful of Egyptian numbers reachable at
+volume, most virtual-number providers either don't support local
+numbers or charge per-message well above local carrier rates. This
+trades that recurring cost for one spare phone and a SIM you already
+pay for.
+
+**Is this production-hardened, or a prototype?**
+The upstream (`android-sms-gateway/server`) is: 5,600+ stars, JWT auth
+with token revocation, rate limiting, Prometheus/Grafana shipped
+in-repo, active commit history with real performance work. This repo
+is the deployment wrapper (Docker Compose + MariaDB + secrets
+discipline) around that — it has not yet been used to send a single
+real message (see [Status](#status)).
 
 ## Acknowledgments
 
