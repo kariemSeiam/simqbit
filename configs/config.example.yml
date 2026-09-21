@@ -1,9 +1,9 @@
 database:
-  host: sms-mesh-db
+  host: simqbit-db
   port: 3306
-  user: smsmesh
+  user: simqbit
   password: change-me
-  database: smsmesh
+  database: simqbit
   timezone: UTC
   debug: false
   max_open_conns: 4
@@ -46,7 +46,7 @@ jwt:
   secret: change-me
   access_ttl: 15m
   refresh_ttl: 720h
-  issuer: sms-mesh
+  issuer: simqbit
 
 otp:
   enabled: true
