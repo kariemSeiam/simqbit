@@ -36,7 +36,7 @@
 
 ## Why
 
-Any internal project (Hvar, gaffer, freelance-venture) needs to send
+Any internal project needs to send
 OTPs, order confirmations, or alerts by SMS. The usual answer is a
 per-message API like Twilio — expensive, and often unavailable for
 local numbers outside a handful of supported countries.
@@ -77,7 +77,7 @@ The name: **Sim** (the physical SIM/Android device layer) + **Qbit**
 
 ```mermaid
 flowchart LR
-    A[Fleet project<br/>Hvar / gaffer / etc.] -->|POST /messages<br/>private_token| B[SimQbit server<br/>Go + MariaDB]
+    A[Fleet project] -->|POST /messages<br/>private_token| B[SimQbit server<br/>Go + MariaDB]
     B -->|FCM push| C[Android app<br/>Kotlin/Ktor]
     C -->|SmsManager| D[Carrier network]
     D --> E[Recipient phone]
@@ -202,29 +202,44 @@ simqbit/
 Yes — this uses `SmsManager` over your real SIM, so normal carrier
 rate limits and anti-spam policies apply. It's built for
 low-to-moderate internal traffic (OTPs, order confirmations, alerts),
-not bulk marketing sends. For high volume, use multiple paired devices.
+not bulk marketing sends — see [What it refuses](#what-it-refuses).
+If you need real volume, this isn't the tool; go get a proper bulk
+SMS provider instead of fighting carrier throttling.
 
 **What happens if the phone loses connectivity or dies?**
 Messages queue server-side (`messages:list`/`messages:cancel` API) and
-the health endpoint reports device online/offline state. There's no
-automatic failover to a second device yet — pairing a second phone is
-supported by the upstream server, but SimQbit's current deployment
-targets one device.
+the health endpoint reports device online/offline state (see
+[Status](#status)). There's no automatic failover to a second device
+yet — pairing a second phone is supported by the upstream server, but
+this deployment's `config.yml` targets one device. If single-device
+availability isn't good enough for what you're building, pair a
+second phone before you need it, not after it goes down.
 
 **Why not just use Twilio and eat the cost?**
-For a project needing a handful of Egyptian numbers reachable at
-volume, most virtual-number providers either don't support local
-numbers or charge per-message well above local carrier rates. This
+For a handful of Egyptian numbers reachable at volume, most
+virtual-number providers either don't support local numbers or charge
+per-message well above local carrier rates (see [Why](#why)). This
 trades that recurring cost for one spare phone and a SIM you already
-pay for.
+pay for. If your project needs numbers in a dozen countries with SLA
+guarantees, that tradeoff runs the other way — use Twilio.
 
 **Is this production-hardened, or a prototype?**
 The upstream (`android-sms-gateway/server`) is: 5,600+ stars, JWT auth
 with token revocation, rate limiting, Prometheus/Grafana shipped
-in-repo, active commit history with real performance work. This repo
-is the deployment wrapper (Docker Compose + MariaDB + secrets
-discipline) around that — it has not yet been used to send a single
-real message (see [Status](#status)).
+in-repo, active commit history with real performance work (see
+[Comparison](#why-this-fork)). This repo is the deployment wrapper
+(Docker Compose + MariaDB + secrets discipline) around that — it has
+not yet been used to send a single real message. Don't point anything
+customer-facing at it until [Status](#status) says a device is paired
+and this line is gone.
+
+**Why not build this into each project instead of a shared service?**
+Because that's how you end up with three different Twilio
+integrations, three different secret rotations, and three different
+bugs in the same SMS-delivery code — one per project. SimQbit exists
+so the fleet pays that cost once. If you only ever have one project
+that needs SMS, a shared service is overhead you don't need yet —
+vendor it directly and skip this.
 
 ## Acknowledgments
 
@@ -239,3 +254,18 @@ their source.
 
 [Apache License 2.0](LICENSE) — same license as the upstream projects
 this deployment is built on.
+
+---
+
+<br>
+
+<div align="center">
+
+*A SIM card was always a real, addressable endpoint on a network.*
+*SimQbit doesn't invent that — it just stops making you forget it.*
+
+<br>
+
+**[kariemSeiam/simqbit](https://github.com/kariemSeiam/simqbit)** · Apache-2.0
+
+</div>
