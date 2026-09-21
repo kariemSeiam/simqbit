@@ -1,0 +1,38 @@
+services:
+  db:
+    image: mariadb:11
+    container_name: sms-mesh-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASS}
+      MYSQL_DATABASE: smsmesh
+      MYSQL_USER: smsmesh
+      MYSQL_PASSWORD: ${DB_PASS}
+    volumes:
+      - sms_mesh_db:/var/lib/mysql
+    networks: [sms-mesh]
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  server:
+    image: ghcr.io/android-sms-gateway/server:latest
+    container_name: sms-mesh-server
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./configs/config.yml:/app/config.yml:ro
+    ports:
+      - "127.0.0.1:3900:3000"
+    networks: [sms-mesh]
+
+networks:
+  sms-mesh:
+    driver: bridge
+
+volumes:
+  sms_mesh_db:

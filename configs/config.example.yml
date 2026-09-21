@@ -1,0 +1,62 @@
+database:
+  host: sms-mesh-db
+  port: 3306
+  user: smsmesh
+  password: change-me
+  database: smsmesh
+  timezone: UTC
+  debug: false
+  max_open_conns: 4
+  max_idle_conns: 2
+
+gateway:
+  mode: private
+  private_token: change-me
+  upstream_url: https://api.sms-gate.app/upstream/v1
+
+http:
+  listen: 0.0.0.0:3000
+  proxies:
+    - "127.0.0.1"
+  api:
+    host:
+    path: /api
+  openapi:
+    enabled: true
+
+fcm:
+  credentials_json: "{}"
+  timeout_seconds: 1
+  debounce_seconds: 5
+
+sse:
+  keep_alive_period_seconds: 15
+
+messages:
+  cache_ttl_seconds: 300
+  hashing_interval_seconds: 60
+
+cache:
+  url: memory://
+
+pubsub:
+  url: memory://
+
+jwt:
+  secret: change-me
+  access_ttl: 15m
+  refresh_ttl: 720h
+  issuer: sms-mesh
+
+otp:
+  enabled: true
+  length: 6
+  ttl: 60
+  retries: 3
+
+tasks:
+  messages_hashing:
+    interval: 168h
+  messages_cleanup:
+    interval: 24h
+    max_pending_age: 168h
