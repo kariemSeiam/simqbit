@@ -100,3 +100,19 @@ simqbit/
 - Server bound to `127.0.0.1` — not reachable from outside the host
   unless deliberately proxied (e.g. via Tailscale or a reverse proxy
   with its own auth).
+- GitHub secret scanning, push protection, and Dependabot security
+  updates enabled on this repo.
+
+## Acknowledgments
+
+Built on top of [`android-sms-gateway`](https://github.com/capcom6/android-sms-gateway)
+(Android app) and [`android-sms-gateway/server`](https://github.com/android-sms-gateway/server)
+(backend) by [capcom6](https://github.com/capcom6) and contributors —
+both Apache-2.0. This repository packages a private deployment
+(Docker Compose + MariaDB) for internal fleet use; it does not modify
+their source.
+
+## License
+
+[Apache License 2.0](LICENSE) — same license as the upstream projects
+this deployment is built on.
